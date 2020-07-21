@@ -1,17 +1,18 @@
-import * as cdk from "@aws-cdk/core";
 import * as codepipeline from "@aws-cdk/aws-codepipeline";
 import * as codepipeline_actions from "@aws-cdk/aws-codepipeline-actions";
 import { CdkPipeline, SimpleSynthAction } from "@aws-cdk/pipelines";
-import { SecretValue } from "@aws-cdk/core";
+import { SecretValue, Stack, Construct, StackProps } from "@aws-cdk/core";
 
-export interface CdkPipelineToBeanstalkStackProps extends cdk.StackProps {
+export interface CdkPipelineToBeanstalkStackProps extends StackProps {
   GitHubOwner: string;
   GitHubRepo: string;
 }
 
-export class CdkPipelinesElasticBeanstalkExampleStack extends cdk.Stack {
+export class CdkPipelineStack extends Stack {
+  public cdkPipeline: CdkPipeline;
+
   constructor(
-    scope: cdk.Construct,
+    scope: Construct,
     id: string,
     props: CdkPipelineToBeanstalkStackProps
   ) {
@@ -19,7 +20,7 @@ export class CdkPipelinesElasticBeanstalkExampleStack extends cdk.Stack {
 
     const sourceArtifact = new codepipeline.Artifact();
     const cloudAssemblyArtifact = new codepipeline.Artifact();
-    const pipeline = new CdkPipeline(this, "Pipeline", {
+    this.cdkPipeline = new CdkPipeline(this, "Pipeline", {
       // The pipeline name
       pipelineName: "CDKPipelineToBeanstalk",
       cloudAssemblyArtifact,
