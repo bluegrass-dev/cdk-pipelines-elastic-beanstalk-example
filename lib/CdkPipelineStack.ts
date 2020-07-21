@@ -2,10 +2,15 @@ import * as codepipeline from "@aws-cdk/aws-codepipeline";
 import * as codepipeline_actions from "@aws-cdk/aws-codepipeline-actions";
 import { CdkPipeline, SimpleSynthAction } from "@aws-cdk/pipelines";
 import { SecretValue, Stack, Construct, StackProps } from "@aws-cdk/core";
+import { pipeline } from "stream";
+import { BeanstalkEnvironmentStage } from "./BeanstalkEnvironmentStage";
+import { BeanstalkApplicationStage } from "./BeanstalkApplicationStage";
 
 export interface CdkPipelineToBeanstalkStackProps extends StackProps {
   GitHubOwner: string;
   GitHubRepo: string;
+  ApplicationName: string;
+  SolutionStackName: string;
 }
 
 export class CdkPipelineStack extends Stack {
@@ -44,5 +49,19 @@ export class CdkPipelineStack extends Stack {
         buildCommand: "npm run build",
       }),
     });
+
+    this.cdkPipeline.addApplicationStage(
+      new BeanstalkApplicationStage(this, "app", {
+        ApplicationName: props.ApplicationName,
+      })
+    );
+
+    this.cdkPipeline.addApplicationStage(
+      new BeanstalkEnvironmentStage(this, "dev", {
+        ApplicationName: props.ApplicationName,
+        EnvironmentName: "dev",
+        SolutionStackName: props.SolutionStackName,
+      })
+    );
   }
 }

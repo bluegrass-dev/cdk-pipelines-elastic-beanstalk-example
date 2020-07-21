@@ -12,6 +12,8 @@ test("Empty Stack", () => {
   const stack = new example.CdkPipelineStack(app, "MyTestStack", {
     GitHubOwner: "test",
     GitHubRepo: "repo",
+    ApplicationName: "test",
+    SolutionStackName: "test",
   });
   // THEN
   expectCDK(stack).to(
